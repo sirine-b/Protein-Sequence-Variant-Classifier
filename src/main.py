@@ -1,11 +1,12 @@
 import torch
 import esm
-from utils import prepare_data, load_embeddings
+from utils import *
 from xgboost_classifier import train_xgboost, test_xgboost
 import xgboost as xgb
 from dnn_classifier import train_dnn, test_dnn, DNNClassifier
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def main():
     """
@@ -87,6 +88,10 @@ def main():
         print(f"Error loading or generating test embeddings: {e}")
         return
 
+    # Understanding correlation between ESM embedding dimensions and protein seq features
+    df = pd.read_csv('data/df_tp53_train.csv')
+    sequences_train = df['sequence'].tolist()  # Convert sequence column to a list
+    detailed_results = detailed_correlation_analysis(embeddings_train, sequences_train)
     # Step 4: Check for pre-trained models
     dnn_model_path = "models/best_dnn_model.pth"
     xgboost_model_path = "models/best_xgboost_model.json"
@@ -97,12 +102,12 @@ def main():
 
         # Load DNN model
         dnn_classifier = DNNClassifier(input_dim=embeddings_train.shape[1], hidden_dim=128).to(device)
-        dnn_classifier.load_state_dict(torch.load(dnn_model_path))
+        dnn_classifier.load_state_dict(torch.load(dnn_model_path, map_location=torch.device('cpu')))
         dnn_classifier.eval()
         print("Loaded pre-trained DNN model.")
 
         # Test DNN model
-        test_dnn(dnn_classifier, embeddings_test, token_embeddings_test, labels_test, device)
+        test_dnn(dnn_classifier, embeddings_test, labels_test, device)
 
         # Load XGBoost model
         xgboost_classifier = xgb.XGBClassifier()
@@ -117,7 +122,7 @@ def main():
         print("Pre-trained models not found. Training models...")
         try:
             dnn_classifier = train_dnn(embeddings_train, labels_train, embeddings_eval, labels_eval, device)
-            test_dnn(dnn_classifier, embeddings_test, token_embeddings_test, labels_test, device)
+            test_dnn(dnn_classifier, embeddings_test, labels_test, device)
         except Exception as e:
             print(e)
 
