@@ -15,7 +15,7 @@ This project focuses on predicting whether protein variants are **benign** or **
 Protein variants can have significant implications for human health, with some variants being benign and others pathogenic. This project leverages machine learning to classify protein variants based on their sequence data. The embeddings are generated using the **ESM model**, and the classification is performed using both **Deep Neural Networks (DNN)** and **XGBoost**.
 
 ## Features
-- **ESM Embeddings**: Utilizes the ESM model to generate both pooled (CLS token) and token-level embeddings for protein sequences.
+- **ESM Embeddings**: Utilises the ESM model to generate both pooled (CLS token) and token-level embeddings for protein sequences.
 - **Deep Neural Network (DNN)**: A custom DNN model with batch normalization, dropout, and leaky ReLU activation for binary classification.
 - **XGBoost**: A gradient boosting model optimised using grid search for hyperparameter tuning.
 - **SHAP Explainability**: Provides feature importance and model interpretability using SHAP (SHapley Additive exPlanations).
@@ -43,13 +43,16 @@ Protein variants can have significant implications for human health, with some v
 ├── data/                   # CSV files containing sequences and labels
 ├── src/
   ├── main.py                # Orchestrates the full pipeline
-  ├── utils.py               # Helper functions for data processing and visualization
+  ├── utils.py               # Helper functions for data processing and visualisation
   ├── dnn_classifier.py      # Deep Neural Network model training & testing
   └── xgboost_classifier.py  # XGBoost model training & testing
+├── pretrained/              # Pretrained models and already generated embeddings to skip embedding and training stages
+  ├── models_to_download.py        # Pretrained models 
+  ├── embeddings_to_download.py    # Already generated embeddings for provided data (TP53 CSV files) 
   
  # Below folders are created once the model runs #
 ├── embeddings/             # Saved computed embeddings to save time and prevent having to compute them at each run
-└──  models/                # Saved models and results
+└── models/                 # Saved models and results
  ```
 ## Installation
 ### 1. Clone the repository:
@@ -89,7 +92,9 @@ If you want to use your own data, follow these steps:
 
 ---
 
-### 2. Case 1: Train and Test your own Models
+### 2. Running the Script
+
+#### Case 1: Train and Test your own Models
 
 To train and evaluate the models, run the following command:
 
@@ -103,18 +108,18 @@ This will:
 4. Evaluate performance of both classifiers on the test set.
 5. Save results, plots, and models.
 
-### 2. Case 2: Test the Pretrained Models with pre-Generated Embeddings
-If you want to skip training and directly start using the pre-trained models provided in the repository:
+#### Case 2: Test the Pretrained Models with pre-Generated Embeddings
+If you want to skip training and embedding and directly start using the pre-trained models provided in the repository:
 
-#### 1. Download the pre-trained models and embeddings (generated for the TP53 data files provided under data/ folder) from the pretrained/ folder.
+##### 1. Download the pre-trained models and embeddings (generated for the TP53 data files provided under data/ folder) from the pretrained/ folder.
 
-#### 2. Place the downloaded files in the appropriate folders:
+##### 2. Place the downloaded files in the appropriate folders:
 
 - Trained models: models/
 
 - Embeddings: embeddings/
 
-#### 3. Run the main.py script:
+##### 3. Run the main.py script:
 
 ```bash
 python main.py
