@@ -116,7 +116,7 @@ def test_xgboost(model, embeddings_test, labels_test):
             y_pred,
             class_names=["Benign", "Pathogenic"],
             model_name='XGBoost',
-            save_path="models/xgboost_confusion_matrix.png"
+            save_path="figures/xgboost_confusion_matrix.png"
         )
 
         # SHAP Analysis for feature importance
@@ -133,11 +133,9 @@ def test_xgboost(model, embeddings_test, labels_test):
             )
 
             # Save the plot before showing
-            plt.savefig("models/xgboost_shap_values.png", dpi=300, bbox_inches='tight')  
+            plt.savefig("figures/xgboost_shap_values.png", dpi=300, bbox_inches='tight')  
             plt.show()  # Show if running interactively
             plt.close()  # Close the figure to prevent duplication issues
-            # plt.savefig("models/xgboost_shap_values.png")
-            # plt.show()
         except Exception as e:
             print(f"SHAP analysis for XGBoost failed: {e}")
 
