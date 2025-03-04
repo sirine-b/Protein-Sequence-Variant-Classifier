@@ -89,7 +89,7 @@ If you want to use your own data, follow these steps:
 
 ---
 
-### Case 1: Train and Test your own Models
+### 2. Case 1: Train and Test your own Models
 
 To train and evaluate the models, run the following command:
 
@@ -103,18 +103,18 @@ This will:
 4. Evaluate performance of both classifiers on the test set.
 5. Save results, plots, and models.
 
-#### Case 2: Test the Pretrained Models with pre-Generated Embeddings
+### 2. Case 2: Test the Pretrained Models with pre-Generated Embeddings
 If you want to skip training and directly start using the pre-trained models provided in the repository:
 
-### 1. Download the pre-trained models and embeddings (generated for the TP53 data files provided under data/ folder) from the pretrained/ folder.
+#### 1. Download the pre-trained models and embeddings (generated for the TP53 data files provided under data/ folder) from the pretrained/ folder.
 
-### 2. Place the downloaded files in the appropriate folders:
+#### 2. Place the downloaded files in the appropriate folders:
 
 - Trained models: models/
 
 - Embeddings: embeddings/
 
-### 3. Run the main.py script:
+#### 3. Run the main.py script:
 
 ```bash
 python main.py
@@ -122,7 +122,7 @@ python main.py
 
 **_Note_**: The main.py script checks whether the pretrained models and embeddings are present in the correct folders and under the correct name. If yes (i.e. when you've done steps 1 and 2), then it will load the pretrained models and test them on the downloaded embeddings. If not (i.e. case 1) , it will generate embeddings based on given data and train models from scratch.
 
-**3. Check the results**
+### 3. Check the results
    
    After running the pipeline, check:
 
