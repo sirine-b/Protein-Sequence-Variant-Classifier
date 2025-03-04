@@ -68,7 +68,7 @@ Protein variants can have significant implications for human health, with some v
 
 ### 1. Prepare Your Data
 
-#### Using Provided Data
+#### Case 1: Using Provided Data
 - The repository already includes example data for training, validation, and testing in the `data/` folder:
   - `data/df_tp53_train.csv`: Training data.
   - `data/df_tp53_eval.csv`: Validation data.
@@ -78,7 +78,7 @@ Protein variants can have significant implications for human health, with some v
   - `sequence`: Protein sequence.
   - `label`: Binary classification (`0` for benign, `1` for pathogenic).
 
-#### Using Your Own Data
+#### Case 2: Using Your Own Data
 If you want to use your own data, follow these steps:
 1. Format your data as a CSV file with the following columns:
    - `id`: Unique identifier for each variant.
@@ -89,8 +89,6 @@ If you want to use your own data, follow these steps:
    - For training data, update the file name in **line 47** of `main.py`.
    - For validation data, update the file name in **line 65** of `main.py`.
    - For test data, update the file name in **line 83** of `main.py`.
-
----
 
 ### 2. Running the Script
 
