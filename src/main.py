@@ -16,7 +16,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    # Step 2: Load a smaller ESM model
+    # Step 2: Load the ESM model
     try:
         model, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
         batch_converter = alphabet.get_batch_converter()
@@ -31,6 +31,11 @@ def main():
     train_base_path = "embeddings/train"
     val_base_path = "embeddings/val"
     test_base_path = "embeddings/test"
+
+    # Create directories if they don't exist
+    os.makedirs("models", exist_ok=True)
+    os.makedirs("embeddings", exist_ok=True)
+    os.makedirs("figures", exist_ok=True)
 
     # Step 3: Prepare and load data
     train_embeddings_path = f"{train_base_path}_pooled_embeddings.npy"
