@@ -52,40 +52,76 @@ Protein variants can have significant implications for human health, with some v
 └──  models/                # Saved models and results
  ```
 ## Installation
-**1. Clone the repository:**
+### 1. Clone the repository:
    ```bash
    git clone https://github.com/your-username/protein-variant-prediction.git
    cd protein-variant-prediction
    ```
-**2. Install the required libraries**
+### 2. Install the required libraries
    ```bash
    pip install -r requirements.txt
    ```
-## Usage 
-**1. Prepare your data**
+## Usage
 
-   _**Note**_: Data for training, validation and testing is already included in the repository (under the data/ folder) in the form of CSV files.
+### 1. Prepare Your Data
 
-   However, if you wish you add your own data, feel free to do so. Make sure to:
-- Format it as a CSV file with_sequence with the following columns:
-    - id: Unique identifier for each variant
-    - sequence: Protein sequence
-    - label: Binary classification (0 for benign, 1 for pathogenic),
-- Add CSV files to the data/ folder
-- Update the code with the corresponding file names given (i.e. specifically need to update lines 47, 65, and 83 for the training, validation and testing datasets respectively).
-   
-**2. Run the full pipeline**
-   ```bash
-   python main.py
-   ```
-   
-   This will:
-    1. Load the ESM-2 model
-    2. Generate embeddings for your protein sequences.
-    3. Train the DNN classifier and XGBoost model on the obtained embeddings.
-    4. Evaluate performance of both classifiers on the test set.
-    5. Save results, plots, and models.
-       
+#### Using Provided Data
+- The repository already includes example data for training, validation, and testing in the `data/` folder:
+  - `data/df_tp53_train.csv`: Training data.
+  - `data/df_tp53_eval.csv`: Validation data.
+  - `data/df_tp53_test.csv`: Test data.
+- Each CSV file contains the following columns:
+  - `id`: Unique identifier for each variant.
+  - `sequence`: Protein sequence.
+  - `label`: Binary classification (`0` for benign, `1` for pathogenic).
+
+#### Using Your Own Data
+If you want to use your own data, follow these steps:
+1. Format your data as a CSV file with the following columns:
+   - `id`: Unique identifier for each variant.
+   - `sequence`: Protein sequence.
+   - `label`: Binary classification (`0` for benign, `1` for pathogenic).
+2. Add your CSV files to the `data/` folder.
+3. Update the file names in the code:
+   - For training data, update the file name in **line 47** of `main.py`.
+   - For validation data, update the file name in **line 65** of `main.py`.
+   - For test data, update the file name in **line 83** of `main.py`.
+
+---
+
+### Case 1: Train and Test your own Models
+
+To train and evaluate the models, run the following command:
+
+```bash
+python main.py
+```
+This will: 
+1. Load the ESM-2 model
+2. Generate embeddings for your protein sequences.
+3. Train the DNN classifier and XGBoost model on the obtained embeddings.
+4. Evaluate performance of both classifiers on the test set.
+5. Save results, plots, and models.
+
+#### Case 2: Test the Pretrained Models with pre-Generated Embeddings
+If you want to skip training and directly start using the pre-trained models provided in the repository:
+
+### 1. Download the pre-trained models and embeddings (generated for the TP53 data files provided under data/ folder) from the pretrained/ folder.
+
+### 2. Place the downloaded files in the appropriate folders:
+
+- Trained models: models/
+
+- Embeddings: embeddings/
+
+### 3. Run the main.py script:
+
+```bash
+python main.py
+```
+
+**_Note_**: The main.py script checks whether the pretrained models and embeddings are present in the correct folders and under the correct name. If yes (i.e. when you've done steps 1 and 2), then it will load the pretrained models and test them on the downloaded embeddings. If not (i.e. case 1) , it will generate embeddings based on given data and train models from scratch.
+
 **3. Check the results**
    
    After running the pipeline, check:
@@ -101,7 +137,8 @@ Protein variants can have significant implications for human health, with some v
 * models/xgboost_feature_importance.png → Feature importance plot for XGBoost.
 
 ## Results
+
 | Model   | Accuracy | Precision | Recall | F1 Score |
 |---------|----------|-----------|--------|----------|
 | DNN     | XX.XX%   | XX.XX%    | XX.XX% | XX.XX%   |
-| XGBoost | XX.XX%   | XX.XX%    | XX.XX% | XX.XX%   |
+| XGBoost | 0.9155   | 0.8864    | 0.9750 | 0.9286   |
