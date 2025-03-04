@@ -2,9 +2,10 @@ import torch
 import esm
 from utils import prepare_data, load_embeddings
 from xgboost_classifier import train_xgboost, test_xgboost
-from dnn_classifier import train_dnn, test_dnn
+import xgboost as xgb
+from dnn_classifier import train_dnn, test_dnn, DNNClassifier
 import os
-import pandas as pd 
+import pandas as pd
 
 def main():
     """
@@ -86,17 +87,46 @@ def main():
         print(f"Error loading or generating test embeddings: {e}")
         return
 
-    # Step 4: Train and evaluate DNN
-    try:
-        dnn_classifier = train_dnn(embeddings_train, labels_train, embeddings_eval, labels_eval, device)
-        test_dnn(dnn_classifier, embeddings_test, token_embeddings_test, labels_test, device)
-    except Exception as e:
-        print(e)
+    # Step 4: Check for pre-trained models
+    dnn_model_path = "models/best_dnn_model.pth"
+    xgboost_model_path = "models/best_xgboost_model.json"
 
-    # Step 5: Train and evaluate XGBoost
-    try:
-        xgboost_classifier = train_xgboost(embeddings_train, labels_train, embeddings_eval, labels_eval)
+    if os.path.exists(dnn_model_path) and os.path.exists(xgboost_model_path):
+        # Load pre-trained models and test them
+        print("Pre-trained models found. Loading and testing...")
+
+        # Load DNN model
+        dnn_classifier = DNNClassifier(input_dim=embeddings_train.shape[1], hidden_dim=128).to(device)
+        dnn_classifier.load_state_dict(torch.load(dnn_model_path))
+        dnn_classifier.eval()
+        print("Loaded pre-trained DNN model.")
+
+        # Test DNN model
+        test_dnn(dnn_classifier, embeddings_test, token_embeddings_test, labels_test, device)
+
+        # Load XGBoost model
+        xgboost_classifier = xgb.XGBClassifier()
+        xgboost_classifier.load_model(xgboost_model_path)
+        print("Loaded pre-trained XGBoost model.")
+
+        # Test XGBoost model
         test_xgboost(xgboost_classifier, embeddings_test, labels_test)
-    except Exception as e:
-        print(e)
-main()
+
+    else:
+        # Train and evaluate DNN
+        print("Pre-trained models not found. Training models...")
+        try:
+            dnn_classifier = train_dnn(embeddings_train, labels_train, embeddings_eval, labels_eval, device)
+            test_dnn(dnn_classifier, embeddings_test, token_embeddings_test, labels_test, device)
+        except Exception as e:
+            print(e)
+
+        # Train and evaluate XGBoost
+        try:
+            xgboost_classifier = train_xgboost(embeddings_train, labels_train, embeddings_eval, labels_eval)
+            test_xgboost(xgboost_classifier, embeddings_test, labels_test)
+        except Exception as e:
+            print(e)
+
+if __name__ == "__main__":
+    main()

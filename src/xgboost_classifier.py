@@ -61,7 +61,7 @@ def train_xgboost(embeddings_train, labels_train, embeddings_eval, labels_eval):
             embeddings_train,
             labels_train,
             eval_set=[(embeddings_eval, labels_eval)],
-            verbose=True
+            verbose=False
         )
 
         # Get best model and parameters
