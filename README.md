@@ -1,6 +1,6 @@
 # Protein Variant Pathogenicity Prediction
 
-This project focuses on predicting whether protein variants are **benign** or **pathogenic** using deep learning (DNN) and gradient boosting (XGBoost) models. The models are trained on embeddings generated from protein sequences using the **ESM (Evolutionary Scale Modeling)** model, a state-of-the-art protein language model.
+This project focuses on predicting whether protein variants are **benign** or **pathogenic** using deep neural network (**DNN**) and extreme gradient boosting (**XGBoost**) models. The models are trained on embeddings generated from protein sequences using the **ESM (Evolutionary Scale Modeling)** model, a state-of-the-art protein language model.
 
 ## Table of Contents
 - [Introduction](#introduction)
