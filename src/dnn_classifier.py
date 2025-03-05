@@ -1,16 +1,15 @@
-# dnn_classifier.py
 from utils import plot_confusion_matrix
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
+import numpy as np
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
 import matplotlib.pyplot as plt
-import seaborn as sns
 import shap
 from torch.cuda.amp import autocast, GradScaler  # For mixed precision training
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-
+import traceback
 class DNNClassifier(nn.Module):
     """
     A Deep Neural Network classifier for protein sequence variant classification.
@@ -164,6 +163,19 @@ def train_dnn(embeddings_train, labels_train, embeddings_eval, labels_eval, devi
         print(f"Epoch [{epoch+1}/{num_epochs}] | Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | "
               f"Acc: {accuracy:.4f} | Precision: {precision:.4f} | Recall: {recall:.4f} | F1: {f1:.4f}{auc_metric}")
 
+        # Model Checkpointing
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            counter = 0
+            # Save the best model
+            torch.save(model.state_dict(), 'models/best_dnn_model.pth')
+            print(f"Saved new best model with validation loss: {best_val_loss:.4f}")
+        else:
+            counter += 1
+            if counter >= patience:
+                print(f"Early stopping triggered after {epoch} epochs")
+                early_stop = True
+
     # Plot training curves
     plt.figure(figsize=(12, 4))
     
@@ -188,21 +200,20 @@ def train_dnn(embeddings_train, labels_train, embeddings_eval, labels_eval, devi
     plt.title('Validation F1 Score')
     
     plt.tight_layout()
-    plt.savefig('models/training_curves.png')
+    plt.savefig('figures/dnn_training_curves.png')
     plt.show()
     
     # Load the best model for returning
     model.load_state_dict(torch.load('models/best_dnn_model.pth'))
     return model
 
-def test_dnn(model, embeddings_test, token_embeddings_test, labels_test, device, batch_size=32):
+def test_dnn(model, embeddings_test, labels_test, device, batch_size=32):
     """
     Evaluates the DNN model on the test set and explains predictions using SHAP.
 
     Args:
         model: Trained DNN model.
         embeddings_test (np.array): Test pooled embeddings.
-        token_embeddings_test (np.array): Test token-level embeddings.
         labels_test (list): Test labels.
         device: Device (CPU or GPU) to use for evaluation.
         batch_size (int): Batch size for evaluation.
@@ -246,85 +257,17 @@ def test_dnn(model, embeddings_test, token_embeddings_test, labels_test, device,
     except ValueError:
         print("Could not calculate AUC (possibly only one class in test set)")
     
-    print(f"Test Metrics:")
+    print(f"DNN Test Metrics:")
     print(f"Accuracy: {accuracy:.4f}")
     print(f"Precision: {precision:.4f}")
     print(f"Recall: {recall:.4f}")
     print(f"F1 Score: {f1:.4f}")
 
     # Plot confusion matrix
-    cm = confusion_matrix(all_labels, all_preds)
-    plt.figure(figsize=(6, 6))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False,
-                xticklabels=["Benign", "Pathogenic"], yticklabels=["Benign", "Pathogenic"])
-    plt.xlabel("Predicted")
-    plt.ylabel("True")
-    plt.title("Confusion Matrix")
-    plt.savefig('models/confusion_matrix.png')
-    plt.show()
-
-    # SHAP Explainability for feature importance
-    try:
-        # Use pooled embeddings which are more manageable for SHAP
-        # Take a subset for computational efficiency
-        background = X_test[:100].to(device)
-        
-        # Define a prediction function
-        def predict_fn(x):
-            model.eval()
-            with torch.no_grad():
-                return torch.sigmoid(model(torch.tensor(x, dtype=torch.float32).to(device))).cpu().numpy()
-        
-        # Use DeepExplainer for deep learning models
-        explainer = shap.DeepExplainer(model, background)
-        
-        # Calculate SHAP values for a subset of the test embeddings
-        test_subset = X_test[:100].to(device)
-        shap_values = explainer.shap_values(test_subset.cpu().numpy())
-        
-        # Plot SHAP summary
-        plt.figure(figsize=(10, 6))
-        shap.summary_plot(shap_values, test_subset.cpu().numpy(), 
-                         feature_names=[f"Dim_{i}" for i in range(test_subset.shape[1])])
-        plt.title("SHAP Feature Importance")
-        plt.savefig('models/shap_importance.png')
-        plt.show()
-        
-    except Exception as e:
-        print(f"SHAP analysis failed: {e}")
-        print("Trying alternative approach with KernelExplainer...")
-        
-        try:
-            # Alternative: Use KernelExplainer with reduced feature set
-            # First reduce dimensionality for visualization
-            from sklearn.decomposition import PCA
-            
-            # Apply PCA to reduce dimensions to a manageable number for KernelExplainer
-            pca = PCA(n_components=10)
-            X_test_pca = pca.fit_transform(X_test.cpu().numpy())
-            
-            # Create a simpler model wrapper function
-            def model_pca_wrapper(x):
-                model.eval()
-                with torch.no_grad():
-                    return torch.sigmoid(model(torch.tensor(pca.inverse_transform(x), 
-                                               dtype=torch.float32).to(device))).cpu().numpy()
-            
-            # Use KernelExplainer on reduced feature set
-            background_pca = X_test_pca[:50]  # Smaller background set
-            explainer = shap.KernelExplainer(model_pca_wrapper, background_pca)
-            
-            # Explain a few samples
-            shap_values = explainer.shap_values(X_test_pca[:20])
-            
-            # Plot the SHAP values
-            plt.figure(figsize=(10, 6))
-            shap.summary_plot(shap_values, X_test_pca[:20], 
-                            feature_names=[f"PC_{i}" for i in range(X_test_pca.shape[1])])
-            plt.title("SHAP Summary (PCA Components)")
-            plt.savefig('models/shap_pca_importance.png')
-            plt.show()
-            
-        except Exception as e:
-            print(f"Alternative SHAP analysis also failed: {e}")
-            print("Skipping SHAP visualisation")
+    plot_confusion_matrix(
+            all_labels,
+            all_preds,
+            class_names=["Benign", "Pathogenic"],
+            model_name='DNN',
+            save_path="figures/DNN_confusion_matrix.png"
+        )
