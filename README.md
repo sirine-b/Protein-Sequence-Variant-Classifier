@@ -154,7 +154,17 @@ Below are the results obtained whether the trained models were tested on the tes
 | DNN     | 0.8028   | 1.0000    | 0.6500 | 0.7879   |
 | XGBoost | 0.9155   | 0.8864    | 0.9750 | 0.9286   |
 
+
+
+<div style="display: flex;">
+  <img src="https://github.com/user-attachments/assets/9907f4fc-e742-4c08-abe5-2082b63156c3" alt="Image 1" style="width: 48%; margin-right: 2%;">
+  <img src="https://github.com/user-attachments/assets/cb045978-b069-49e5-91d9-e68185c98750" alt="Image 2" style="width: 48%;">
+</div>
 ### SHAP Analysis and Interpretability
 The reason I performed SHAP analysis was to identify which dimensions of the ESM embeddings are most influential in predicting protein variant pathogenicity and understand better the outputs/predictions made by the classifiers. However, these dimensions are not inherently interpretable because they arise from a self-supervised learning process. In othe words, unlike predefined biological features (e.g. length of sequence, GC content etc), they capture abstract, non-linear representations of protein sequences. As such, simply learning that embedding dimensions 12 and 657 for example contributed the most to the prediction doesn't necessarily provide meaningful biological insights. To address this, I attempted to analyse correlations between embedding dimensions and biologically relevant protein sequence features (i.e., amino acid composition, hydrophobicity, GC content). This helped relate machine-learnt features to tangible biochemical properties, and therefore offered insights into what the model may be prioritising in terms of protein sequence features this time around (much more useful for interpretability). However, it is important to keep in mind tht I only explored a few biochemical features and these may not be the most relevant or useful ones to correlate to the ESM embedding dimensions. As such, although I was able to learn about some correlations between embedding dimensions and protein sequence features, this is an aspect that still needs to be worked on to further improve interpretability.
+
+![image](https://github.com/user-attachments/assets/47a809ff-d704-477c-b6e8-f14083059327)
+![image](https://github.com/user-attachments/assets/1d25a590-b3c7-4663-bd69-a59135eb0366)
+![image](https://github.com/user-attachments/assets/d3497f0a-bc1d-4a9d-8775-63c7bbcb0331)
 
 
