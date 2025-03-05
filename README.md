@@ -40,19 +40,20 @@ Protein variants can have significant implications for human health, with some v
   
 ## Project Structure
  ``` bash
-├── data/                   # CSV files containing sequences and labels
+├── data/                    # CSV files containing sequences and labels
 ├── src/
   ├── main.py                # Orchestrates the full pipeline
   ├── utils.py               # Helper functions for data processing and visualisation
   ├── dnn_classifier.py      # Deep Neural Network model training & testing
   └── xgboost_classifier.py  # XGBoost model training & testing
 ├── pretrained/              # Pretrained models and already generated embeddings to skip embedding and training stages
-  ├── models_to_download.py        # Pretrained models 
-  ├── embeddings_to_download.py    # Already generated embeddings for provided data (TP53 CSV files) 
+  ├── models                 # Pretrained models 
+  ├── embeddings             # Already generated embeddings for provided data (TP53 CSV files) 
   
- # Below folders are created once the model runs #
+ # Below folders are created once the main.py script is run #
 ├── embeddings/             # Saved computed embeddings to save time and prevent having to compute them at each run
-└── models/                 # Saved models and results
+├── models/                 # Saved models
+└── figures/                # Saved figures/results
  ```
 ## Installation
 ### 1. Clone the repository:
