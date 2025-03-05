@@ -5,8 +5,8 @@ import pandas as pd
 import torch
 from torch.nn.utils.rnn import pad_sequence
 import numpy as np
-import esm
 import os
+
 def prepare_data(file_name, model, batch_converter, device, save_path=None):
     """
     Prepares data by loading sequences, generating ESM embeddings, and optionally saving them.
