@@ -133,11 +133,17 @@ python main.py
 
 * models/best_xgboost_model.json → Best trained XGBoost model.
 
-* models/training_curves.png → Training loss and accuracy.
+* figures/training_curves.png → Training loss and accuracy.
 
-* models/confusion_matrix.png → Test set confusion matrix.
+* figures/xgboost_confusion_matrix.png → Confusion matrix of XGBoost classifier on test data.
   
-* models/xgboost_feature_importance.png → Feature importance plot for XGBoost.
+* figures/dnn_confusion_matrix.png → Confusion matrix of DNN classifier on test data.
+  
+* figures/xgboost_feature_importance.png → SHAP Analysis for XGBoost classifier (i.e. SHAP scores of most important embedding dimensions).
+  
+* figures/all_features_emb_correlation_analysis.png → Visualisation of correlation between the protein sequence features and embedding dimensions
+
+* figures/top_features_emb_correlation_analysis.png → Visualisation of correlation between the top 10 most important protein sequence features and first 50 embedding dimensions
 
 ## Results
 ### Metrics
